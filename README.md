@@ -1,6 +1,8 @@
 # Postman to Stoplight Converter
 
-This tool converts Postman collections to Stoplight collections.
+This tool converts Postman collections to Stoplight collections. Try it [online here](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/converter.html).
+
+A second tool converts multiple Postman environments to a Stoplight environment file. Try it [online here](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/envConverter.html).
 
 ## Requirements
 * The input Postman collection MUST be at 2.1 format
