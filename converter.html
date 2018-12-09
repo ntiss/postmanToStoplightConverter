@@ -206,6 +206,7 @@ function convert() {
 		var result = convertPostman2Stoplight(inputCollection);   
 		elt.value = JSON.stringify(result, 2, 2);
 		elt.readOnly = "true";
+		elt.setSelectionRange(0, 0); 
 	} catch {  
 		elt.value = JSON.stringify({ "error" : "The input is not JSON well-formed." }, 2, 2);
 	} 
@@ -220,8 +221,9 @@ function reset() {
 
 
 <h1>Postman to Stoplight converter</h1>
-
-<strong>Disclaimer : </strong>
+<strong>Source : </strong><a href="https://github.com/ntiss/postmanToStoplightConverter">View this project on Github</a><br/>
+<strong>License : </strong><a href="https://github.com/ntiss/postmanToStoplightConverter/blob/master/LICENSE">Apache License V2</a><br/>
+<strong>Disclaimer : </strong> This tool is provided "as is" and "with all faults". You are solely responsible for determining whether this tool applies to your context.
 <br/><br/>
 <textarea id="inputCollection" name="inputCollection" style="width:95%;height:600px" onfocus="focusTextArea()" onblur="blurTextArea()">Paste here you postman collection...</textarea>
 <br/>
