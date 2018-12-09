@@ -185,22 +185,19 @@ function convertPostman2Stoplight(postmanCollection) {
 	return step;
   }
 
-function focusTextArea() {
-	elt = document.getElementById('inputCollection');
-	if(elt.value == 'Paste here you postman collection...') {
+function focusTextArea(elt) {
+	if(elt.value == 'Paste here your postman collection...') {
 		elt.value='';
 	}
 }
 
-function blurTextArea() {
-	elt = document.getElementById('inputCollection');
+function blurTextArea(elt) {
 	if(elt.value == '') {
-		elt.value='Paste here you postman collection...';
+		elt.value='Paste here your postman collection...';
 	}
 }
 
-function convert() {
-	elt = document.getElementById('inputCollection');
+function convert(elt) {
 	try { 
 		var inputCollection = JSON.parse(elt.value);
 		var result = convertPostman2Stoplight(inputCollection);   
@@ -212,9 +209,8 @@ function convert() {
 	} 
 }
 
-function reset() {
-	elt = document.getElementById('inputCollection');
-	elt.value = 'Paste here you postman collection...';
+function reset(elt) {
+	elt.value = 'Paste here your postman collection...';
 	elt.readOnly = "false";
 }
 </script>
@@ -225,10 +221,10 @@ function reset() {
 <strong>License : </strong><a href="https://github.com/ntiss/postmanToStoplightConverter/blob/master/LICENSE">Apache License V2</a><br/>
 <strong>Disclaimer : </strong> This tool is provided "as is" and "with all faults". You are solely responsible for determining whether this tool applies to your context.
 <br/><br/>
-<textarea id="inputCollection" name="inputCollection" style="width:95%;height:600px" onfocus="focusTextArea()" onblur="blurTextArea()">Paste here you postman collection...</textarea>
+<textarea id="inputCollection" name="inputCollection" style="width:95%;height:600px" onfocus="focusTextArea(this)" onblur="blurTextArea(this)">Paste here your postman collection...</textarea>
 <br/>
-<input type="button" onclick="convert()" value="Convert to Stoplight"/>
-<input type="button" onclick="reset()" value="Reset form"/>
+<input type="button" onclick="convert(document.getElementById('inputCollection'))" value="Convert to Stoplight"/>
+<input type="button" onclick="reset(document.getElementById('inputCollection'))" value="Reset form"/>
 
 </body>
 </html>
