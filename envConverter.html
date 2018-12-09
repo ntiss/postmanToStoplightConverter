@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Postman to Stoplight Converter</title>
+</head>
+<body>
+
+<script type="text/javascript">
+
+function convertPostmanEnv2Stoplight(inputEnvs) {
+
+	var stoplightEnvironment = {
+		"stoplight": "1.0",
+		"environments": {}
+	};
+	
+	for (var i = 0; i < inputEnvs.length; ++i) {
+		if(inputEnvs[i].type=='textarea') {
+			try { 
+				var postmanEnv = JSON.parse(inputEnvs[i].value);			
+				stoplightEnvironment.environments[postmanEnv.name] = extractEnv(postmanEnv);
+			} catch {  
+				console.log("The input is not JSON well-formed.");
+			}
+		}
+	}
+
+	function extractEnv(postmanEnv) {
+		var env = {};
+		for(var i in postmanEnv.values) {
+			env[postmanEnv.values[i].key] = postmanEnv.values[i].value;
+		}
+		return env;
+	}  
+
+	return stoplightEnvironment;
+}
+
+
+function focusTextArea(elt) {
+	if(elt.value == 'Paste here your postman environment...') {
+		elt.value='';
+	}
+}
+
+function blurTextArea(elt) {
+	if(elt.value == '') {
+		elt.value='Paste here your postman environment...';
+	}
+}
+
+function convert(envAreas) {
+	var result = convertPostmanEnv2Stoplight(document.getElementsByName('inputEnv'));
+	envAreas.innerHTML = '<textarea id="resultEnv" style="width:95%;height:600px">' + JSON.stringify(result, 2, 2) + '</textarea>';
+}
+
+function reset(envAreas) {
+	envAreas.innerHTML = '';
+	addEnv(envAreas);
+}
+
+function addEnv(envAreas) {
+
+	var newElement = document.createElement('textarea');
+	newElement.value = 'Paste here your postman environment...';
+	newElement.name = 'inputEnv';
+	newElement.style = 'width:250px;height:600px;margin-right:5px';
+	newElement.onfocus = function() { focusTextArea(this); };
+	newElement.onblur = function() { blurTextArea(this); };
+
+	Element.prototype.appendAfter = function(element) {
+	  element.parentNode.insertBefore(this, element.nextSibling);
+	}, false;	
+	
+	newElement.appendAfter(envAreas.lastChild);
+}
+    
+
+</script>
+
+
+<h1>Postman Environment to Stoplight Environment converter</h1>
+<strong>Source : </strong><a href="https://github.com/ntiss/postmanToStoplightConverter">View this project on Github</a><br/>
+<strong>License : </strong><a href="https://github.com/ntiss/postmanToStoplightConverter/blob/master/LICENSE">Apache License V2</a><br/>
+<strong>Disclaimer : </strong> This tool is provided "as is" and "with all faults". You are solely responsible for determining whether this tool applies to your context.
+<br/><br/>
+
+<!-- Output element -->
+<span id="envAreas">
+</span>
+<input type="button" onclick="addEnv(document.getElementById('envAreas'))" value="Add env" />
+<br/><br/>
+<input type="button" onclick="convert(document.getElementById('envAreas'))" value="Convert to Stoplight environments"/>
+<input type="button" onclick="reset(document.getElementById('envAreas'))" value="Reset form"/>
+
+
+<script type="text/javascript">
+// Add First textarea
+addEnv(document.getElementById('envAreas'));
+</script>
+
+</body>
+</html>
