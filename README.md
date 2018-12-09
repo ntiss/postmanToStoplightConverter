@@ -6,7 +6,7 @@ This tool converts Postman collections to Stoplight collections.
 * The input Postman collection MUST be at 2.1 format
 
 ## Usage
-* Simply open the HTML page
+* Simply open the HTML page. Try it [online here](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/converter.html)
 * Paste your Postman collection into the textarea
 * Click the button
 * Copy/paste the result into Stoplight "</>Code" tab of your TESTING section.
