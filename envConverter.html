@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Postman to Stoplight Converter</title>
+  <meta charset="utf-8">
 </head>
 <body>
 
@@ -13,68 +14,60 @@ function convertPostmanEnv2Stoplight(inputEnvs) {
 		"stoplight": "1.0",
 		"environments": {}
 	};
-	
+
 	for (var i = 0; i < inputEnvs.length; ++i) {
-		if(inputEnvs[i].type=='textarea') {
-			try { 
-				var postmanEnv = JSON.parse(inputEnvs[i].value);			
-				stoplightEnvironment.environments[postmanEnv.name] = extractEnv(postmanEnv);
-			} catch {  
-				console.log("The input is not JSON well-formed.");
+			try {
+				var postmanEnv = JSON.parse(inputEnvs[i]);
+        var env = {};
+    		for(var j in postmanEnv.values) {
+    			env[postmanEnv.values[j].key] = postmanEnv.values[j].value;
+    		}
+				stoplightEnvironment.environments[postmanEnv.name] = env;
+			} catch {
+				console.log("This input is not JSON well-formed.");
 			}
-		}
 	}
 
-	function extractEnv(postmanEnv) {
-		var env = {};
-		for(var i in postmanEnv.values) {
-			env[postmanEnv.values[i].key] = postmanEnv.values[i].value;
-		}
-		return env;
-	}  
 
 	return stoplightEnvironment;
 }
 
+function convertFiles(inputFiles, outputArea) {
 
-function focusTextArea(elt) {
-	if(elt.value == 'Paste here your postman environment...') {
-		elt.value='';
-	}
+  // Check if a file is selected
+  if(inputFiles.files.length > 0) {
+    // Check for JSON extension
+    for(var i=0; i < inputFiles.files.length; i++) {
+      var fileType = inputFiles.files[i].name.split('.');
+      fileType = fileType[fileType.length - 1].toLowerCase();
+      if (fileType != 'json') {
+        outputArea.value = JSON.stringify({ "error" : "Each file must be a JSON file." }, 2, 2);
+        break;
+      }
+    }
+
+    // Read all files
+    var envsList = [];
+    var count = inputFiles.files.length
+    for(var i=0; i < inputFiles.files.length; i++) {
+      var reader = new FileReader();
+      reader.onload = function() {
+        envsList.push(this.result);
+        if (!--count) {
+          // All reads are finished
+            var convertedResult = convertPostmanEnv2Stoplight(envsList);
+            outputArea.value = JSON.stringify(convertedResult, 2, 2);
+            outputArea.style.height="500px";
+        }
+      };
+      reader.readAsText(inputFiles.files[i]);
+    }
+
+  } else {
+      outputArea.value = JSON.stringify({ "error" : "Please choose a JSON file." }, 2, 2);
+      return;
+  }
 }
-
-function blurTextArea(elt) {
-	if(elt.value == '') {
-		elt.value='Paste here your postman environment...';
-	}
-}
-
-function convert(envAreas) {
-	var result = convertPostmanEnv2Stoplight(document.getElementsByName('inputEnv'));
-	envAreas.innerHTML = '<textarea id="resultEnv" style="width:95%;height:600px">' + JSON.stringify(result, 2, 2) + '</textarea>';
-}
-
-function reset(envAreas) {
-	envAreas.innerHTML = '';
-	addEnv(envAreas);
-}
-
-function addEnv(envAreas) {
-
-	var newElement = document.createElement('textarea');
-	newElement.value = 'Paste here your postman environment...';
-	newElement.name = 'inputEnv';
-	newElement.style = 'width:250px;height:600px;margin-right:5px';
-	newElement.onfocus = function() { focusTextArea(this); };
-	newElement.onblur = function() { blurTextArea(this); };
-
-	Element.prototype.appendAfter = function(element) {
-	  element.parentNode.insertBefore(this, element.nextSibling);
-	}, false;	
-	
-	newElement.appendAfter(envAreas.lastChild);
-}
-    
 
 </script>
 
@@ -85,19 +78,16 @@ function addEnv(envAreas) {
 <strong>Disclaimer : </strong> This tool is provided "as is" and "with all faults". You are solely responsible for determining whether this tool applies to your context.
 <br/><br/>
 
-<!-- Output element -->
-<span id="envAreas">
-</span>
-<input type="button" onclick="addEnv(document.getElementById('envAreas'))" value="Add env" />
+
+Input :<br/>
+<div style="width:95%;border:1px #999 solid;padding:10px">
+  <input id="inputFiles" type="file" multiple />
+  <br/><br/>
+  <input type="button" onclick="convertFiles(document.getElementById('inputFiles'), document.getElementById('outputEnvironment'))" value="Convert to Stoplight"/>
+</div>
 <br/><br/>
-<input type="button" onclick="convert(document.getElementById('envAreas'))" value="Convert to Stoplight environments"/>
-<input type="button" onclick="reset(document.getElementById('envAreas'))" value="Reset form"/>
-
-
-<script type="text/javascript">
-// Add First textarea
-addEnv(document.getElementById('envAreas'));
-</script>
+Output :<br/>
+<textarea id="outputEnvironment" style="width:95%;height:200px;border:1px #999 solid;margin:0;padding:10px" readonly="true"></textarea>
 
 </body>
 </html>
