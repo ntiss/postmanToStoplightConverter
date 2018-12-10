@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Postman to Stoplight Converter</title>
+  <meta charset="utf-8">
 </head>
 <body>
 
@@ -19,7 +20,7 @@ function convertPostman2Stoplight(postmanCollection) {
 			"error" : "The input Postman collection must be at the 2.1 format.",
 			"expectedSchema" : expectedSchema
 		};
-	} 
+	}
 	var stoplightCollection = {
 		"scenarioVersion" : "1.1",
 		"name" : postmanCollection.info.name,
@@ -29,7 +30,7 @@ function convertPostman2Stoplight(postmanCollection) {
 		"after" : {},
 		"scenarios" : {},
 		"utilities" : {}
-	};   
+	};
 
 	function threatItem(currentObject, prefix) {
 		if(currentObject.item !== null) {
@@ -57,20 +58,20 @@ function convertPostman2Stoplight(postmanCollection) {
 					later.push(currentObject.item[i]);
 				}
 			}
-			
+
 			// At the end : put in the scenario if it's not empty
 			if(scen.steps.length > 0) {
 				stoplightCollection.scenarios[generatePrefix()] = scen;
 			}
-			
+
 			// Post-treatment of subfolders
 			for(var i in later) {
 				// Recursion
-				threatItem(later[i], currentObject.name + ' > ');		
-			}		
+				threatItem(later[i], currentObject.name + ' > ');
+			}
 		}
-	}  
-  
+	}
+
 	threatItem(postmanCollection, postmanCollection.info.name);
 
 	return stoplightCollection;
@@ -87,7 +88,7 @@ function convertPostman2Stoplight(postmanCollection) {
         d = Math.floor(d/36);
         return r.toString(36);
     });
-}  
+}
   function extractStep(currentStepObject) {
 	var step = {
 		"type" : "http",
@@ -100,9 +101,9 @@ function convertPostman2Stoplight(postmanCollection) {
 		"after" : {
 		"assertions": [],
 		"transforms": []
-		}		
-	};	
-	
+		}
+	};
+
 	// HTTP Verb
     step.input.method = currentStepObject.request.method.toLowerCase();
 
@@ -120,8 +121,8 @@ function convertPostman2Stoplight(postmanCollection) {
 
 	// URL
 	step.input.url = encodeEnvVars(
-						currentStepObject.request.url.host.join("/") +  
-						"/" + 
+						currentStepObject.request.url.host.join("/") +
+						"/" +
 						currentStepObject.request.url.path.join("/"));
 
 	// Body
@@ -144,15 +145,15 @@ function convertPostman2Stoplight(postmanCollection) {
 		// Regex based on the Postman snippets
 		var statusCodeRegex = /.*responseCode\.code\s*===\s*(\d{3})\s*;.*/g;
 		var responseTimeRegex = /.*pm\.expect\(pm\.response\.responseTime\)\.to\.be\.below\((\d{3})\)\s*;.*/g;
-		
+
 		var commentedScript = "// This script has been retrieve from your Postman collection\n";
 		commentedScript += "// All lines are obviously commented out due to incompatibily\n";
 		commentedScript += "//\n\n";
-		
+
 		for(i in postmanScript) {
-		
+
 			commentedScript += "// " + postmanScript[i] + "\n";
-		
+
 			// Status code :
 			var match = statusCodeRegex.exec(postmanScript[i]);
 			if(match!=null && match.length > 0){
@@ -162,7 +163,7 @@ function convertPostman2Stoplight(postmanCollection) {
 					"expected": 1*match[1]    // Cheat to keep numeric format
 				});
 			}
-			
+
 			// Response time :
 			match = responseTimeRegex.exec(postmanScript[i]);
 			if(match!=null && match.length > 0){
@@ -172,47 +173,51 @@ function convertPostman2Stoplight(postmanCollection) {
 					"expected": 1*match[1]    // Cheat to keep numeric format
 				});
 			}
-			
+
 			// Captures
 			// Too complicated. In a next life.
-			
+
 		}
-		
+
 		// Full script
-		step.after.script = commentedScript;	
+		step.after.script = commentedScript;
 	}
-	
+
 	return step;
   }
 
-function focusTextArea(elt) {
-	if(elt.value == 'Paste here your postman collection...') {
-		elt.value='';
-	}
+function convertFile(fileInput, outputArea) {
+
+  // Check if a file is selected
+  if(fileInput.files.length > 0) {
+    // Check for JSON extension
+    fileType = fileInput.files[0].name.split('.');
+    fileType = fileType[fileType.length - 1].toLowerCase();
+    if (fileType != 'json') {
+      outputArea.value = JSON.stringify({ "error" : "The file must be a JSON file." }, 2, 2);
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.addEventListener('load', function() {
+      try {
+        var inputCollection = JSON.parse(reader.result);
+        var convertedResult = convertPostman2Stoplight(inputCollection);
+        outputArea.value = JSON.stringify(convertedResult, 2, 2);
+        outputArea.style.height="500px";
+      } catch {
+        outputArea.value = JSON.stringify({ "error" : "The input is not JSON well-formed." }, 2, 2);
+        return;
+      }
+    });
+
+    reader.readAsText(fileInput.files[0]);
+  } else {
+      outputArea.value = JSON.stringify({ "error" : "Please choose a JSON file." }, 2, 2);
+      return;
+  }
 }
 
-function blurTextArea(elt) {
-	if(elt.value == '') {
-		elt.value='Paste here your postman collection...';
-	}
-}
-
-function convert(elt) {
-	try { 
-		var inputCollection = JSON.parse(elt.value);
-		var result = convertPostman2Stoplight(inputCollection);   
-		elt.value = JSON.stringify(result, 2, 2);
-		elt.readOnly = "true";
-		elt.setSelectionRange(0, 0); 
-	} catch {  
-		elt.value = JSON.stringify({ "error" : "The input is not JSON well-formed." }, 2, 2);
-	} 
-}
-
-function reset(elt) {
-	elt.value = 'Paste here your postman collection...';
-	elt.readOnly = "false";
-}
 </script>
 
 
@@ -221,11 +226,17 @@ function reset(elt) {
 <strong>License : </strong><a href="https://github.com/ntiss/postmanToStoplightConverter/blob/master/LICENSE">Apache License V2</a><br/>
 <strong>Disclaimer : </strong> This tool is provided "as is" and "with all faults". You are solely responsible for determining whether this tool applies to your context.
 <br/><br/>
-<textarea id="inputCollection" name="inputCollection" style="width:95%;height:600px" onfocus="focusTextArea(this)" onblur="blurTextArea(this)">Paste here your postman collection...</textarea>
-<br/>
-<input type="button" onclick="convert(document.getElementById('inputCollection'))" value="Convert to Stoplight"/>
-<input type="button" onclick="reset(document.getElementById('inputCollection'))" value="Reset form"/>
+
+
+Input :<br/>
+<div style="width:95%;border:1px #999 solid;padding:10px">
+  <input id="inputFile" type="file" />
+  <br/><br/>
+  <input type="button" onclick="convertFile(document.getElementById('inputFile'), document.getElementById('inputCollection'))" value="Convert to Stoplight"/>
+</div>
+<br/><br/>
+Output :<br/>
+<textarea id="inputCollection" name="inputCollection" style="width:95%;height:200px;border:1px #999 solid;margin:0;padding:10px" readonly="true"></textarea>
 
 </body>
 </html>
-
