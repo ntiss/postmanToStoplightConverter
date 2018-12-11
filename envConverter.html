@@ -15,6 +15,7 @@ function convertPostmanEnv2Stoplight(inputEnvs) {
 		"environments": {}
 	};
 
+  var unorderedEnvs = {};
 	for (var i = 0; i < inputEnvs.length; ++i) {
 			try {
 				var postmanEnv = JSON.parse(inputEnvs[i]);
@@ -22,10 +23,19 @@ function convertPostmanEnv2Stoplight(inputEnvs) {
     		for(var j in postmanEnv.values) {
     			env[postmanEnv.values[j].key] = postmanEnv.values[j].value;
     		}
-				stoplightEnvironment.environments[postmanEnv.name] = env;
+        // Store
+        unorderedEnvs[postmanEnv.name] = env;
+
 			} catch {
 				console.log("This input is not JSON well-formed.");
 			}
+
+      // Sort environments by key name
+      var orderedEnvs = {};
+      Object.keys(unorderedEnvs).sort().forEach(function(key) {
+        orderedEnvs[key] = unorderedEnvs[key];
+      });
+      stoplightEnvironment.environments = orderedEnvs;
 	}
 
 
