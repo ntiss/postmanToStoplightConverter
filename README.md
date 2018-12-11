@@ -11,7 +11,7 @@ These tools convert :
 * Simply [open the Collection converter](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/converter.html) or the [Environments converter](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/envConverter.html)
 * Pick your Postman collection file from your disk. For environments, you can pick multiple files.
 * Click the convert button
-* Copy/paste the result into Stoplight "</>Code" tab of your TESTING section or in the ".stoplkight" file for the environment.
+* Copy/paste the result into Stoplight "</>Code" tab of your TESTING section or in the ".stoplight" file for the environment.
 
 ## Features
 * Converts all requests in steps
@@ -25,3 +25,5 @@ These tools convert :
 
 ## Support
 No support, thanks :-)
+
+## 
