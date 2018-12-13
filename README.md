@@ -23,6 +23,10 @@ These tools convert :
 * Doesn't detect captures
 * Doesn't use Stoplight $.ctx
 
+## Disclaimer
+* Shitty web design
+* By far, not the best Javascript code you could see...
+
 ## Support
 No support, thanks :-)
 
