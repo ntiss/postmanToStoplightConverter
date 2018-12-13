@@ -1,14 +1,14 @@
 # Postman to Stoplight Converters
 
 These tools convert :
-* Postman collections to Stoplight collections. Try it [online here](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/converter.html)
- * Multiple Postman environments to a Stoplight environment file. Try it [online here](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/envConverter.html).
+* Postman collections to Stoplight collections. Try it [online here](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/collectionConverter.html)
+ * Multiple Postman environments to a Stoplight environment file. Try it [online here](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/environmentsConverter.html).
 
 ## Requirements
 * The input Postman collection MUST be at 2.1 format
 
 ## Usage
-* Simply [open the Collection converter](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/converter.html) or the [Environments converter](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/envConverter.html)
+* Simply [open the Collection converter](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/collectionConverter.html) or the [Environments converter](http://htmlpreview.github.io/?https://github.com/ntiss/postmanToStoplightConverter/blob/master/environmentsConverter.html)
 * Pick your Postman collection file from your disk. For environments, you can pick multiple files.
 * Click the convert button
 * Copy/paste the result into Stoplight "</>Code" tab of your TESTING section or in the ".stoplight" file for the environment.
@@ -26,4 +26,3 @@ These tools convert :
 ## Support
 No support, thanks :-)
 
-## 
