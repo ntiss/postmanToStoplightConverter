@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Postman environments to Stoplight Converter</title>
+  <meta charset="utf-8">
+  <script src="./postman2stoplight.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+
+function convertFiles(inputFiles, outputArea) {
+
+  // Check if a file is selected
+  if(inputFiles.files.length > 0) {
+    // Check for JSON extension
+    for(var i=0; i < inputFiles.files.length; i++) {
+      var fileType = inputFiles.files[i].name.split('.');
+      fileType = fileType[fileType.length - 1].toLowerCase();
+      if (fileType != 'json') {
+        outputArea.value = JSON.stringify({ "error" : "Each file must be a JSON file." }, 2, 2);
+        break;
+      }
+    }
+
+    // Read all files
+    var envsList = [];
+    var count = inputFiles.files.length
+    for(var i=0; i < inputFiles.files.length; i++) {
+      var reader = new FileReader();
+      reader.onload = function() {
+        envsList.push(this.result);
+        if (!--count) {
+          // All reads are finished
+            var convertedResult = convertPostmanEnv2Stoplight(envsList);
+            outputArea.value = JSON.stringify(convertedResult, 2, 2);
+            outputArea.style.height="500px";
+        }
+      };
+      reader.readAsText(inputFiles.files[i]);
+    }
+
+  } else {
+      outputArea.value = JSON.stringify({ "error" : "Please choose a JSON file." }, 2, 2);
+      return;
+  }
+}
+
+</script>
+
+
+<h1>Postman Environment to Stoplight Environment converter</h1>
+<strong>Source : </strong><a href="https://github.com/ntiss/postmanToStoplightConverter">View this project on Github</a><br/>
+<strong>License : </strong><a href="https://github.com/ntiss/postmanToStoplightConverter/blob/master/LICENSE">Apache License V2</a><br/>
+<strong>Disclaimer : </strong> This tool is provided "as is" and "with all faults". You are solely responsible for determining whether this tool applies to your context.
+<br/><br/>
+
+
+Input :<br/>
+<div style="width:95%;border:1px #999 solid;padding:10px">
+  <input id="inputFiles" type="file" multiple />
+  <h6 style="margin:0px">(you can pick multiple files)</h6>
+  <br/><br/>
+  <input type="button" onclick="convertFiles(document.getElementById('inputFiles'), document.getElementById('outputEnvironment'))" value="Convert to Stoplight"/>
+</div>
+<br/><br/>
+Output :<br/>
+<textarea id="outputEnvironment" style="width:95%;height:200px;border:1px #999 solid;margin:0;padding:10px" readonly="true"></textarea>
+
+</body>
+</html>
